@@ -1,43 +1,30 @@
-use std::fs::File;
+// use std::fs::File;
+// use std::io::{BufReader, prelude::*};
 use vek::vec::repr_c::{Vec2};
 use crate::utils::*;
 
-fn pos_to_idx(pos: Vec2<usize>, width: usize) -> usize {
-	pos.y * width + pos.x
-}
-
 pub fn solve()
 {
-	let f = File::open("data/day3.txt").unwrap();
-	let (width, _, data) = Array2D::load_file(f, |c| c == '#').to_tuple();
-
-	let count = count_trees(Vec2::new(3, 1), &data, width);
+	let data = Array2D::load_file("data/day3.txt", |c| c == '#');
+	let count = count_trees(Vec2::new(3, 1), &data);
 	println!("{}", count);
+	assert_eq!(count, 151);
 	let res = count 
-		* count_trees(Vec2::new(1, 1), &data, width)
-		* count_trees(Vec2::new(5, 1), &data, width)
-		* count_trees(Vec2::new(7, 1), &data, width)
-		* count_trees(Vec2::new(1, 2), &data, width)
+		* count_trees(Vec2::new(1, 1), &data)
+		* count_trees(Vec2::new(5, 1), &data)
+		* count_trees(Vec2::new(7, 1), &data)
+		* count_trees(Vec2::new(1, 2), &data)
 	;
 	println!("{}", res);
+	assert_eq!(res, 7540141059);
 }
 
-fn count_trees(jump: Vec2<usize>, data: &Vec<bool>, width: usize) -> usize {
+fn count_trees(jump: Vec2<usize>, arr: &Array2D<bool>) -> usize {
 	let mut at = Vec2::zero();
 	let mut count = 0;
-	loop {
-		let idx = pos_to_idx(at, width);
-		if let Some(b) = data.get(idx) {
-			if *b {
-				count += 1;
-			}
-		}
-		else {
-			break;
-		}
-
-		at += jump;
-		at.x = at.x % width;
+	while let Some(b) = arr.get(at) {
+		count += *b as usize;
+		at = arr.wrap_pos_x(at + jump);
 	}
 	count
 }
