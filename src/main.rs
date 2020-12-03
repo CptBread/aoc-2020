@@ -1,6 +1,8 @@
 mod day1;
-use crate::day1::*;
+mod day2;
+mod day3;
+mod utils;
 
 fn main() {
-	day1();
+	day3::solve();
 }

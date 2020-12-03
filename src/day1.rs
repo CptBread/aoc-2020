@@ -203,7 +203,8 @@ const DATA:[u32;200] = [
 	1096
 ];
 
-pub fn day1()
+#[allow(dead_code)]
+pub fn solve()
 {
 	find_2020(2);
 	find_2020(3);
