@@ -35,12 +35,8 @@ pub fn solve() {
 	for item in content.split(&[' ', '\n'][..]) {
 		// println!("{}", item);
 		if item == "\r" {
-			if (found & 0b1111111) == 0b1111111 {
-				count += 1;
-				if (checks & 0b1111111) == 0b1111111 {
-					count_b += 1;
-				}
-			}
+			count += ((found & 0b1111111) == 0b1111111) as usize;
+			count_b += ((checks & 0b1111111) == 0b1111111) as usize;
 			// println!("{:b} {:b} {} {}", found, checks, ok, check_ok);
 			// println!("{:b} {:b}", found, checks);
 			found = 0;
@@ -110,12 +106,8 @@ pub fn solve() {
 
 		}
 	}
-	if (found & 0b1111111) == 0b1111111 {
-		count += 1;
-		if (checks & 0b1111111) == 0b1111111 {
-			count_b += 1;
-		}
-	}
+	count += ((found & 0b1111111) == 0b1111111) as usize;
+	count_b += ((checks & 0b1111111) == 0b1111111) as usize;
 	// println!("{:b} {:b}", found, checks);
 
 	println!("{} {}", count, count_b);
