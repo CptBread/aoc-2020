@@ -104,7 +104,7 @@ pub fn solve() {
 					else if buf == b"hcl" {
 						buf.clear();
 						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						let ok = buf.len() == 7 && buf.remove(0) == b'#' && buf.iter().all(|b| (*b >= b'0' && *b <= b'9') || (*b >= b'a' && *b <= b'z'));
+						let ok = buf.len() == 7 && buf.remove(0) == b'#' && buf.iter().all(|b| b.is_ascii_digit() || b.is_ascii_lowercase());
 						checks |= (ok as usize) << idx;
 						// println!("\t{} {:?}", ok, cat);
 					}
@@ -118,7 +118,7 @@ pub fn solve() {
 					else if buf == b"pid" {
 						buf.clear();
 						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						let ok = buf.len() == 9 && buf.iter().all(|b| (*b >= b'0' && *b <= b'9'));
+						let ok = buf.len() == 9 && buf.iter().all(|b| b.is_ascii_digit());
 						checks |= (ok as usize) << idx;
 						// println!("\t{} {:?}", ok, cat);
 					} else {
