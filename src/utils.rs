@@ -17,7 +17,7 @@ impl<R> UtilRead for BufReader<R>
 	{
 		let mut buf = Vec::new();
 		if self.read_until(until, &mut buf).is_ok() {
-			buf.pop()?;
+			if *buf.last()? == until {buf.pop()?;};
 		}
 		unsafe { std::str::from_utf8_unchecked(&buf) }.parse().ok()
 	}
@@ -26,7 +26,7 @@ impl<R> UtilRead for BufReader<R>
 	{
 		let mut buf = Vec::new();
 		if self.read_until(until, &mut buf).is_ok() {
-			buf.pop();
+			if *buf.last().unwrap() == until {buf.pop();};
 		}
 		unsafe { String::from_utf8_unchecked(buf) }
 	}

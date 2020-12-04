@@ -30,4 +30,6 @@ pub fn solve() {
 		}
 	}();
 	println!("A:{} B:{}", valid_a, valid_b);
+	assert_eq!(valid_a, 600);
+	assert_eq!(valid_b, 245);
 }
