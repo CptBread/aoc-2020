@@ -1,137 +1,123 @@
 use std::fs::File;
-use std::io::{BufReader, prelude::*};
-use std::iter;
-use crate::utils::*;
+use std::io::prelude::*;
 
-const FIELDS: [&[u8];8] = [
-	b"byr",
-	b"iyr",
-	b"eyr",
-	b"hgt",
-	b"hcl",
-	b"ecl",
-	b"pid",
-	b"cid",
+const FIELDS: [&str;8] = [
+	"byr",
+	"iyr",
+	"eyr",
+	"hgt",
+	"hcl",
+	"ecl",
+	"pid",
+	"cid",
 ];
 
-const COLORS: [&[u8]; 7] = [
-	b"amb",
-	b"blu",
-	b"brn",
-	b"gry",
-	b"grn",
-	b"hzl",
-	b"oth",
+const COLORS: [&str; 7] = [
+	"amb",
+	"blu",
+	"brn",
+	"gry",
+	"grn",
+	"hzl",
+	"oth",
 ];
 
 pub fn solve() {
-	let file = File::open("data/day4.txt").unwrap();
-	let reader = BufReader::new(file);
+	let mut file = File::open("data/day4.txt").unwrap();
+	let mut content = String::new();
+	file.read_to_string(&mut content).expect("Failed to read file!");
 
 	let mut count = 0;
 	let mut count_b = 0;
-	let mut maybe_end = false;
 	let mut found = 0;
 	let mut checks = 0;
-	let mut buf = Vec::new();
-	for l in reader.lines().map(|l| l.unwrap()).chain(iter::once(String::from(""))) {
-		let mut r = BufReader::new(l.as_bytes());
-		loop {
-			buf.clear();
-			let read = r.read_until(b':', &mut buf).unwrap_or(0);
-			if read == 0 {
-				if maybe_end {
-					// let mut ok = false;
-					// let mut check_ok = false;
-					if (found & 0b1111111) == 0b1111111 {
-						count += 1;
-						// ok = true;
-						if (checks & 0b1111111) == 0b1111111 {
-							count_b += 1;
-							// check_ok = true;
-						}
-					}
-					// println!("{:b} {:b} {} {}", found, checks, ok, check_ok);
-					maybe_end = false;
-					found = 0;
-					checks = 0;
-				} else {
-					maybe_end = true;
-				}
-				break;
-			} else {
-				maybe_end = false;
-				buf.resize(3, 0);
-				if let Some(idx) = FIELDS.iter().position(|f| *f == buf) {
-					found |= 1 << idx;
-					// let cat = String::from_utf8_lossy(&buf).into_owned();
-					if buf == b"hgt" {
-						buf.clear();
-						let read = r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						if read > 3 {
-							let (c1, c0) = (buf.pop().unwrap(), buf.pop().unwrap());
-							let end = [c0, c1];
-							let h = unsafe {std::str::from_utf8_unchecked(&buf)}.parse::<usize>().unwrap_or(0);
-							let ok = (&end == b"in" && h >= 59 && h <= 76)
-								|| (&end == b"cm" && h >= 150 && h <= 193)
-							;
-							checks |= (ok as usize) << idx;
-							// println!("\t{} {:?}", ok, cat);
-						}
-						else {
-							// let ok = false;
-							// println!("\t{} {:?}", ok, cat);
-						}
-					}
-					else if buf == b"byr" {
-						let year = r.parse_until(b' ').unwrap_or(0);
-						let ok = year >= 1920 && year <= 2002;
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					}
-					else if buf == b"iyr" {
-						let year = r.parse_until(b' ').unwrap_or(0);
-						let ok = year >= 2010 && year <= 2020;
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					}
-					else if buf == b"eyr" {
-						let year = r.parse_until(b' ').unwrap_or(0);
-						let ok = year >= 2020 && year <= 2030;
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					}
-					else if buf == b"hcl" {
-						buf.clear();
-						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						let ok = buf.len() == 7 && buf.remove(0) == b'#' && buf.iter().all(|b| b.is_ascii_digit() || b.is_ascii_lowercase());
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					}
-					else if buf == b"ecl" {
-						buf.clear();
-						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						let ok = COLORS.iter().position(|f| *f == buf).is_some();
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					}
-					else if buf == b"pid" {
-						buf.clear();
-						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
-						let ok = buf.len() == 9 && buf.iter().all(|b| b.is_ascii_digit());
-						checks |= (ok as usize) << idx;
-						// println!("\t{} {:?}", ok, cat);
-					} else {
-						r.read_until(b' ', &mut buf).unwrap();
-						// println!("\tignore {:?}", cat);
-					}
-				}
-				else {
-					println!("Bad category: {:?}", std::str::from_utf8(&buf[..]));
+	// let mut buf = Vec::new();
+	for item in content.split(&[' ', '\n'][..]) {
+		// println!("{}", item);
+		if item == "\r" {
+			if (found & 0b1111111) == 0b1111111 {
+				count += 1;
+				if (checks & 0b1111111) == 0b1111111 {
+					count_b += 1;
 				}
 			}
+			// println!("{:b} {:b} {} {}", found, checks, ok, check_ok);
+			// println!("{:b} {:b}", found, checks);
+			found = 0;
+			checks = 0;
+		} else {
+			let mut it = item.trim_end_matches('\r').split(':');
+			let cat = it.next().unwrap();
+			let data = it.next().unwrap_or("");
+			if let Some(idx) = FIELDS.iter().position(|s| *s == cat) {
+				found |= 1 << idx;
+				match idx {
+					0 => {
+						assert_eq!(FIELDS[idx], "byr");
+						let year = data.parse().unwrap_or(0);
+						let ok = year >= 1920 && year <= 2002;
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					1 => {
+						assert_eq!(FIELDS[idx], "iyr");
+						let year = data.parse().unwrap_or(0);
+						let ok = year >= 2010 && year <= 2020;
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					2 => {
+						assert_eq!(FIELDS[idx], "eyr");
+						let year = data.parse().unwrap_or(0);
+						let ok = year >= 2020 && year <= 2030;
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					3 => {
+						assert_eq!(FIELDS[idx], "hgt");
+						let ok = if let Some(h) = data.strip_suffix("in").and_then(|s| s.parse::<usize>().ok()) { h >= 59 && h <= 76 }
+							else if let Some(h) = data.strip_suffix("cm").and_then(|s| s.parse::<usize>().ok()) { h >= 150 && h <= 193 }
+							else { false }
+						;
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					4 => {
+						assert_eq!(FIELDS[idx], "hcl");
+						let ok = data.len() == 7 && &data[0..1] == "#" &&
+							data[1..].bytes().all(|b| b.is_ascii_digit() || b.is_ascii_lowercase())
+						;
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					5 => {
+						assert_eq!(FIELDS[idx], "ecl");
+						let ok = COLORS.iter().position(|f| f == &data).is_some();
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					}
+					6 => {
+						assert_eq!(FIELDS[idx], "pid");
+						let ok = data.len() == 9 && data.chars().all(|b| b.is_ascii_digit());
+						checks |= (ok as usize) << idx;
+						// println!("\t{} {}:{}", ok, cat, data);
+					} 
+					_ => {
+						// r.read_until(b' ', &mut buf).unwrap();
+					}
+				}
+			}
+
 		}
 	}
+	if (found & 0b1111111) == 0b1111111 {
+		count += 1;
+		if (checks & 0b1111111) == 0b1111111 {
+			count_b += 1;
+		}
+	}
+	// println!("{:b} {:b}", found, checks);
+
 	println!("{} {}", count, count_b);
 	assert_eq!(count, 222);
 	assert_eq!(count_b, 140);
