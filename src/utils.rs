@@ -5,8 +5,12 @@ use vek::vec::repr_c::{Vec2};
 pub trait UtilRead {
 	fn parse_until<T>(&mut self, until: u8) -> Option<T> 
 		where T: std::str::FromStr;
+	fn parse_until_buf<T>(&mut self, until: u8, buf: &mut Vec<u8>) -> Option<T> 
+		where T: std::str::FromStr;
 
 	fn read_string_until(&mut self, until: u8) -> String;
+	fn read_to_buf_until(&mut self, until: u8, buf: &mut Vec<u8>) -> Option<usize>;
+
 }
 
 impl<R> UtilRead for BufReader<R>
@@ -16,7 +20,13 @@ impl<R> UtilRead for BufReader<R>
 		where T: std::str::FromStr
 	{
 		let mut buf = Vec::new();
-		if self.read_until(until, &mut buf).is_ok() {
+		self.parse_until_buf(until, &mut buf)
+	}
+
+	fn parse_until_buf<T>(&mut self, until: u8, buf: &mut Vec<u8>) -> Option<T> 
+		where T: std::str::FromStr
+	{
+		if self.read_until(until, buf).is_ok() {
 			if *buf.last()? == until {buf.pop()?;};
 		}
 		unsafe { std::str::from_utf8_unchecked(&buf) }.parse().ok()
@@ -25,10 +35,17 @@ impl<R> UtilRead for BufReader<R>
 	fn read_string_until(&mut self, until: u8) -> String
 	{
 		let mut buf = Vec::new();
-		if self.read_until(until, &mut buf).is_ok() {
-			if *buf.last().unwrap() == until {buf.pop();};
-		}
+		self.read_to_buf_until(until, &mut buf);
 		unsafe { String::from_utf8_unchecked(buf) }
+	}
+
+	fn read_to_buf_until(&mut self, until: u8, buf: &mut Vec<u8>) -> Option<usize> {
+		if let Ok(read) = self.read_until(until, buf) {
+			if *buf.last().unwrap() == until {buf.pop();};
+			Some(read)
+		} else{
+			None
+		}
 	}
 }
 

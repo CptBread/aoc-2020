@@ -26,7 +26,7 @@ const COLORS: [&[u8]; 7] = [
 
 pub fn solve() {
 	let file = File::open("data/day4.txt").unwrap();
-	let mut reader = BufReader::new(file);
+	let reader = BufReader::new(file);
 
 	let mut count = 0;
 	let mut count_b = 0;
@@ -64,12 +64,11 @@ pub fn solve() {
 				buf.resize(3, 0);
 				if let Some(idx) = FIELDS.iter().position(|f| *f == buf) {
 					found |= 1 << idx;
-					let cat = String::from_utf8_lossy(&buf).into_owned();
+					// let cat = String::from_utf8_lossy(&buf).into_owned();
 					if buf == b"hgt" {
 						buf.clear();
-						let read = r.read_until(b' ', &mut buf).unwrap();
+						let read = r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
 						if read > 3 {
-							if *buf.last().unwrap() == b' ' { buf.pop(); };
 							let (c1, c0) = (buf.pop().unwrap(), buf.pop().unwrap());
 							let end = [c0, c1];
 							let h = unsafe {std::str::from_utf8_unchecked(&buf)}.parse::<usize>().unwrap_or(0);
@@ -80,7 +79,7 @@ pub fn solve() {
 							// println!("\t{} {:?}", ok, cat);
 						}
 						else {
-							let ok = false;
+							// let ok = false;
 							// println!("\t{} {:?}", ok, cat);
 						}
 					}
@@ -104,24 +103,21 @@ pub fn solve() {
 					}
 					else if buf == b"hcl" {
 						buf.clear();
-						let read = r.read_until(b' ', &mut buf).unwrap_or(0);
-						if *buf.last().unwrap() == b' ' { buf.pop(); };
+						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
 						let ok = buf.len() == 7 && buf.remove(0) == b'#' && buf.iter().all(|b| (*b >= b'0' && *b <= b'9') || (*b >= b'a' && *b <= b'z'));
 						checks |= (ok as usize) << idx;
 						// println!("\t{} {:?}", ok, cat);
 					}
 					else if buf == b"ecl" {
 						buf.clear();
-						r.read_until(b' ', &mut buf).unwrap_or(0);
-						if *buf.last().unwrap() == b' ' { buf.pop(); };
+						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
 						let ok = COLORS.iter().position(|f| *f == buf).is_some();
 						checks |= (ok as usize) << idx;
 						// println!("\t{} {:?}", ok, cat);
 					}
 					else if buf == b"pid" {
 						buf.clear();
-						let read = r.read_until(b' ', &mut buf).unwrap_or(0);
-						if *buf.last().unwrap() == b' ' { buf.pop(); };
+						r.read_to_buf_until(b' ', &mut buf).unwrap_or(0);
 						let ok = buf.len() == 9 && buf.iter().all(|b| (*b >= b'0' && *b <= b'9'));
 						checks |= (ok as usize) << idx;
 						// println!("\t{} {:?}", ok, cat);
