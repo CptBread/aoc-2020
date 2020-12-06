@@ -31,6 +31,8 @@ pub fn solve() {
 					if ans_b[idx] == group {
 						ans_b[idx] += 1;
 					}
+				} else {
+					panic!("We assumed only lower case ascii characters... That was wrong... Got: {}", c as char);
 				}
 			}
 			group += 1;
