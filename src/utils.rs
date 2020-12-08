@@ -114,11 +114,35 @@ impl<R> UtilRead for BufReader<R>
 			None
 		}
 	}
-
 }
 
-impl<R> UtilReadSeek for BufReader<R>
-	where R: Read+Seek
+impl UtilRead for Read
+{
+	fn read_to_buf_until(&mut self, until: u8, buf: &mut Vec<u8>) -> Option<usize> {
+		let not = until.wrapping_add(1);
+		let mut read = 0;
+		while let Some(b) = self.read_byte() {
+			if b == until {
+				return if read == 0 { None } else { Some(read) };
+			}
+			buf.push(b);
+		}
+		None
+	}
+
+	fn read_byte(&mut self) -> Option<u8>
+	{
+		let mut byte = [0];
+		if let Ok(r) = self.read(&mut byte) {
+			Some(byte[0])
+		} else {
+			None
+		}
+	}
+}
+
+impl<R> UtilReadSeek for R
+	where R: UtilRead+Seek
 {
 	fn read_to_buf_while<F>(&mut self, buf: &mut Vec<u8>, mut f: F) -> Option<usize>
 		where F: FnMut(u8) -> bool
