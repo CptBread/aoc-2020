@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufReader, prelude::*};
 use std::collections::HashSet;
+use crate::utils::split_once;
 
 #[derive(Debug, Clone, Copy)]
 enum Instruction {
@@ -32,15 +33,9 @@ impl Computer {
 		self.idx = match inst {
 			Nop(_) => {self.idx + 1},
 			Acc(v) => {self.acc += v; self.idx + 1},
-			Jmp(v) => {self.idx.wrapping_add((v - 1) as usize)}
+			Jmp(v) => {self.idx.wrapping_add(v as usize)}
 		}
 	}
-}
-
-// Not using nightly so split once coudln't be used...
-fn split_once<'a>(s: &'a str, delim: &str) -> Option<(&'a str, &'a str)> {
-	let mut it = s.splitn(2, delim);
-	Some((it.next()?, it.next()?))
 }
 
 use Instruction::*;
@@ -51,7 +46,7 @@ pub fn solve() {
 	let mut code = Vec::new();
 	for l in read.lines().map(|l| l.unwrap()) {
 		let (inst, arg) = split_once(&l[..], " ").expect("Invalid instruction!");
-		let num = if arg.chars().next() == Some('-') { arg.parse() } else { arg[1..].parse() }.expect("Invalid argument!");
+		let num = arg.parse().expect("Invalid argument!");
 		match inst {
 			"nop" => {code.push(Nop(num))},
 			"acc" => {code.push(Acc(num))},

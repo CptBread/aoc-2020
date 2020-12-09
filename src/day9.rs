@@ -11,8 +11,7 @@ pub fn solve() {
 	let mut ans = 0;
 	let mut buffer = VecDeque::new();
 	let mut nums = Vec::new();
-	for l in read.lines().map(|l| l.unwrap()) {
-		let num = l.parse::<usize>().unwrap();
+	for num in read.lines().map(|l| l.unwrap().parse().unwrap()) {
 		nums.push(num);
 		if buffer.len() >= preamble {
 			if !is_any_sum_of(num, &buffer) {

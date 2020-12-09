@@ -1,12 +1,7 @@
 use std::fs::File;
 use std::io::{BufReader, prelude::*};
 use std::collections::{HashMap, HashSet};
-
-// Not using nightly so split once coudln't be used...
-fn split_once<'a>(s: &'a str, delim: &str) -> Option<(&'a str, &'a str)> {
-	let mut it = s.splitn(2, delim);
-	Some((it.next()?, it.next()?))
-}
+use crate::utils::split_once;
 
 pub fn solve() {
 	let file = File::open("data/day7.txt").unwrap();
