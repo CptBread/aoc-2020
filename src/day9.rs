@@ -38,7 +38,7 @@ pub fn solve() {
 			start += 1;
 		}
 		if sum == ans {
-			let (min, max) = nums[start..(end - 2)].iter().fold((sum,0), |(min, max), n| (min.min(*n), max.max(*n)));
+			let (min, max) = nums[start..end].iter().fold((sum,0), |(min, max), n| (min.min(*n), max.max(*n)));
 			let ans_b = min + max;
 			println!("{}", ans_b);
 			assert_eq!(93396727, ans_b);
