@@ -3,8 +3,6 @@ use std::io::{BufReader, prelude::*};
 use std::collections::VecDeque;
 use itertools::Itertools;
 
-use std::time::{Duration, Instant};
-
 pub fn solve() {
 	let file = File::open("data/day9.txt").unwrap();
 	let read = BufReader::new(file);
