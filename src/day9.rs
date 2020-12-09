@@ -3,6 +3,8 @@ use std::io::{BufReader, prelude::*};
 use std::collections::VecDeque;
 use itertools::Itertools;
 
+use std::time::{Duration, Instant};
+
 pub fn solve() {
 	let file = File::open("data/day9.txt").unwrap();
 	let read = BufReader::new(file);
@@ -26,16 +28,20 @@ pub fn solve() {
 	}
 
 	let mut sum = 0;
-	let mut buffer = VecDeque::new();
-	for n in nums {
-		buffer.push_back(n);
+	let mut start = 0;
+	let mut end = 0;
+	for idx in 0..nums.len() {
+		let n = nums[idx];
+		end += 1;
 		sum += n;
 		while sum > ans {
-			let v = buffer.pop_front().unwrap();
+			let v = nums[start];
 			sum -= v;
+			start += 1;
 		}
 		if sum == ans {
-			let ans_b = buffer.iter().min().unwrap() + buffer.iter().max().unwrap();
+			let (min, max) = nums[start..(end - 2)].iter().fold((sum,0), |(min, max), n| (min.min(*n), max.max(*n)));
+			let ans_b = min + max;
 			println!("{}", ans_b);
 			assert_eq!(93396727, ans_b);
 			break;
