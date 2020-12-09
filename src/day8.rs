@@ -29,12 +29,11 @@ impl Computer {
 	}
 
 	fn do_inst(&mut self, inst: Instruction) {
-		match inst {
-			Nop(_) => {},
-			Acc(v) => {self.acc += v;},
-			Jmp(v) => {self.idx = self.idx.wrapping_add((v - 1) as usize);}
+		self.idx = match inst {
+			Nop(_) => {self.idx + 1},
+			Acc(v) => {self.acc += v; self.idx + 1},
+			Jmp(v) => {self.idx.wrapping_add((v - 1) as usize)}
 		}
-		self.idx += 1;
 	}
 }
 
