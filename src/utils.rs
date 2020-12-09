@@ -2,6 +2,16 @@ use std::io::{BufReader, SeekFrom, prelude::*};
 use std::fs::File;
 use vek::vec::repr_c::{Vec2};
 
+#[macro_export]
+macro_rules! try_block {
+	{ $($token:tt)* } => {{
+		|| -> Option<()> {
+			$($token)*
+			Some(())
+		}()
+	}}
+}
+
 // Not using nightly so split once coudln't be used...
 pub fn split_once<'a>(s: &'a str, delim: &str) -> Option<(&'a str, &'a str)> {
 	let mut it = s.splitn(2, delim);
