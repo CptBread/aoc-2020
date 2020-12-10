@@ -1,6 +1,10 @@
 use std::fs::File;
 use std::io::{BufReader, prelude::*};
-use std::collections::HashMap;
+
+// The amount of ways to traverse between the "one islands" of diffrent sizes follows the tribonacci sequence
+const TRIBONACCI: &[usize] = &[
+	1, 1, 2, 4, 7, 13, 24, 44, 81, 149, 274, 504, 927, 1705, 3136, 5768, 10609, 19513, 35890, 66012, 121415, 223317, 410744, 755476, 1389537, 2555757, 4700770, 8646064, 15902591, 29249425, 53798080, 98950096, 181997601, 334745777, 615693474, 1132436852,
+];
 
 pub fn solve() {
 	let file = File::open("data/day10.txt").unwrap();
@@ -21,27 +25,10 @@ pub fn solve() {
 	println!("{}", ans);
 	assert_eq!(ans, 2112);
 
-	let mut cache = HashMap::new();
-	cache.insert(adapters.len() - 1, 1);
-	let options = check_opts(0, &mut cache, &adapters);
-	println!("{}", options);
-	assert_eq!(options, 3022415986688);
-}
-
-fn check_opts(at: usize, cache: &mut HashMap<usize, usize>, adapters: &Vec<i32>) -> usize {
-	if let Some(v) = cache.get(&at) {
-		return *v;
-	}
-	let mut res = 0;
-	let num = adapters[at];
-	for idx in at + 1..(at + 4).min(adapters.len()) {
-		let v = adapters[idx];
-		if v - num <= 3 {
-			res += check_opts(idx, cache, adapters);
-		} else {
-			break;
-		}
-	}
-	cache.insert(at, res);
-	res
+	let ans = adapters.windows(2).fold((1usize, 0usize), |(res, size), v| 
+		if v[0] + 1 == v[1] {(res, size + 1)}
+		else {(res * TRIBONACCI[size], 0)}
+	).0;
+	println!("{}", ans);
+	assert_eq!(ans, 3022415986688);
 }

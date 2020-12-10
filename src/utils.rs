@@ -1,4 +1,4 @@
-use std::io::{BufReader, SeekFrom, prelude::*};
+use std::io::{BufReader, prelude::*};
 use std::fs::File;
 use vek::vec::repr_c::{Vec2};
 
