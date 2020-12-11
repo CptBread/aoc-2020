@@ -19,17 +19,15 @@ struct Computer {
 
 impl Computer {
 	pub fn do_one(&mut self) -> Option<usize> {
-		self.do_inst(*self.code.get(self.idx)?);
+		self.do_inst(self.next_inst()?);
 		Some(self.idx)
 	}
 
-	pub fn do_one_what(&mut self) -> Option<(usize, Instruction)> {
-		let inst = self.code.get(self.idx)?.clone();
-		self.do_inst(inst);
-		Some((self.idx, inst))
+	pub fn next_inst(&self) -> Option<Instruction> {
+		self.code.get(self.idx).cloned()
 	}
 
-	fn do_inst(&mut self, inst: Instruction) {
+	pub fn do_inst(&mut self, inst: Instruction) {
 		self.idx = match inst {
 			Nop(_) => {self.idx + 1},
 			Acc(v) => {self.acc += v; self.idx + 1},

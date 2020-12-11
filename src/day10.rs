@@ -25,6 +25,9 @@ pub fn solve() {
 	println!("{}", ans);
 	assert_eq!(ans, 2112);
 
+	// FYI, this is not how I first solved this. First I didn't rely on the only 1 or 3 diff thing
+	// so I brute force calculated each posibility but also used a cache so to not recalculate the same
+	// parts over and over again.
 	let ans = adapters.windows(2).fold((1usize, 0usize), |(res, size), v| 
 		if v[0] + 1 == v[1] {(res, size + 1)}
 		else {(res * TRIBONACCI[size], 0)}
