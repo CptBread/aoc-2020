@@ -76,7 +76,8 @@ impl<T> Array2D<T> {
 		pos.y * self.width + pos.x
 	}
 
-	pub fn pos_to_idx(&self, pos: Pos) -> Option<usize> {
+	pub fn pos_to_idx<P: Into<Pos>>(&self, pos: P) -> Option<usize> {
+		let pos: Pos = pos.into();
 		if pos.x >= self.width {
 			None
 		} else if pos.y >= self.height {

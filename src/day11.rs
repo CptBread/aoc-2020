@@ -68,10 +68,7 @@ fn tick(seats: &mut Array2D<Tile>) -> usize {
 			let near = NEIGHBOUR.iter().fold(0, |acc, off| 
 				if let Some(v) = seats.get(at + off) {acc + (*v == Taken) as usize} else {acc}
 			);
-			if *v == Taken && near >= 4 {
-				flip.push(at);
-			}
-			else if *v == Seat && near == 0 {
+			if (*v == Taken && near >= 4) || (*v == Seat && near == 0) {
 				flip.push(at);
 			}
 		}
@@ -100,10 +97,7 @@ fn tick2(seats: &mut Array2D<Tile>) -> usize {
 				}
 				acc
 			});
-			if *v == Taken && near >= 5 {
-				flip.push(at);
-			}
-			else if *v == Seat && near == 0 {
+			if (*v == Taken && near >= 5) || (*v == Seat && near == 0) {
 				flip.push(at);
 			}
 		}
