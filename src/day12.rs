@@ -32,13 +32,13 @@ pub fn solve() {
 			'W' => Vec2::new(-1, 0),
 			'S' => Vec2::new(0, 1),
 			'N' => Vec2::new(0, -1),
-			_ => panic!("Unkown character! {}", dir)
+			_ => panic!("Unkown character! {}", c)
 		};
 		// println!("{} + {} * {} = {}", pos, mov, steps, pos + mov * steps);
 		pos += mov * steps;
 	}
 	let ans = pos.x.abs() + pos.y.abs();
-	println!("{:?} {}", pos, ans);
+	println!("{} {}", pos, ans);
 	assert_eq!(ans, 1565);
 
 	let mut pos = Vec2::<i32>::zero();
@@ -54,12 +54,12 @@ pub fn solve() {
 			'W' => Vec2::new(-1, 0),
 			'S' => Vec2::new(0, 1),
 			'N' => Vec2::new(0, -1),
-			_ => panic!("Unkown character! {}", dir)
+			_ => panic!("Unkown character! {}", c)
 		};
 		// println!("{} + {} * {} = {}", pos, mov, steps, pos + mov * steps);
 		target += mov * steps;
 	}
 	let ans = pos.x.abs() + pos.y.abs();
-	println!("{:?} {}", pos, ans);
+	println!("{} {}", pos, ans);
 	assert_eq!(ans, 78883);
 }
