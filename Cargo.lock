@@ -4,6 +4,7 @@
 name = "aoc-2020"
 version = "0.1.0"
 dependencies = [
+ "intbits",
  "itertools",
  "vek",
 ]
@@ -28,6 +29,12 @@ name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
+
+[[package]]
+name = "intbits"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5170c2c8ecda29c1bccb9d95ccbe107bc75fa084dc0c9c6087e719f9d46330e5"
 
 [[package]]
 name = "itertools"
