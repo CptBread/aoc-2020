@@ -1,5 +1,3 @@
-use std::fs::File;
-use std::io::{BufReader, prelude::*};
 use std::collections::HashMap;
 
 const NUMS: &[usize] = &[
