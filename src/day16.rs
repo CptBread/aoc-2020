@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufReader, prelude::*};
 use std::ops::RangeInclusive;
 use std::collections::HashMap;
+use std::time::Instant;
 use intbits::Bits;
 use crate::utils::split_once;
 
@@ -15,17 +16,11 @@ fn ranges_contains(r: &[RangeInclusive<usize>; 2], v: usize) -> bool {
 }
 
 fn single_bit(data: usize, size: usize) -> Option<usize> {
-	let mut found = None;
-	for idx in 0..size {
-		if data.bit(idx) {
-			if found.is_some() {
-				return None;
-			} else {
-				found = Some(idx);
-			}
-		}
+	if data != 0 && (data & (data.wrapping_sub(1))) == 0 {
+		Some(data.trailing_zeros() as usize)
+	} else {
+		None
 	}
-	found
 }
 
 pub fn solve() {
@@ -74,6 +69,7 @@ pub fn solve() {
 			}
 		}
 	}
+	
 	let mut to_check: Vec<usize> = (0..cats).collect();
 	let mut known = HashMap::new();
 	loop {
@@ -104,6 +100,7 @@ pub fn solve() {
 			res *= ours[*v];
 		}
 	}
+
 	// println!("{:?}", known);
 	println!("{}", res);
 	assert_eq!(res, 4381476149273);
