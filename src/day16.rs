@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::{BufReader, prelude::*};
 use std::ops::RangeInclusive;
 use std::collections::HashMap;
-use std::time::Instant;
 use intbits::Bits;
 use crate::utils::split_once;
 
@@ -15,7 +14,7 @@ fn ranges_contains(r: &[RangeInclusive<usize>; 2], v: usize) -> bool {
 	r[0].contains(&v) || r[1].contains(&v)
 }
 
-fn single_bit(data: usize, size: usize) -> Option<usize> {
+fn single_bit(data: usize) -> Option<usize> {
 	if data != 0 && (data & (data.wrapping_sub(1))) == 0 {
 		Some(data.trailing_zeros() as usize)
 	} else {
@@ -27,7 +26,6 @@ pub fn solve() {
 	let file = File::open("data/day16.txt").unwrap();
 	let read = BufReader::new(file);
 	let mut lines = read.lines().map(Result::unwrap);
-	// let mut rules = HashMap::new();
 	let mut categories = Vec::new();
 	let mut rules = Vec::new();
 	while let Some(l) = lines.next() {
@@ -75,7 +73,7 @@ pub fn solve() {
 	loop {
 		let size = to_check.len();
 		to_check.retain(|idx| {
-			if let Some(bit_idx) = single_bit(possible[*idx], cats) {
+			if let Some(bit_idx) = single_bit(possible[*idx]) {
 				// println!("{}: {}", categories[bit_idx], ours[*idx]);
 				possible.iter_mut().enumerate().for_each(|(n, p)| {
 					if n != *idx {
