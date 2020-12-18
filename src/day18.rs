@@ -37,13 +37,13 @@ fn eval<I>(it: &mut I) -> Option<u64>
 	}
 }
 
-fn get_val<I, F>(it: &mut I, func: F) -> Option<u64>
+fn get_val<I, F>(it: &mut I, eval_func: F) -> Option<u64>
 	where 
 		I: Iterator<Item = char>,
 		F: Fn(&mut I) -> Option<u64>
 {
 	match it.next()? {
-		'(' => func(it),
+		'(' => eval_func(it),
 		c => c.to_digit(10).map(|v| v as u64),
 	}
 }
