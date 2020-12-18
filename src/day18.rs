@@ -28,11 +28,10 @@ fn eval<I>(it: &mut I) -> Option<u64>
 	let mut curr = get_val(it, eval)?;
 	loop {
 		curr = match it.next() {
-			Some(')') => return Some(curr),
 			Some('+') => curr + get_val(it, eval).expect("No rhs value for '+'"),
 			Some('*') => curr * get_val(it, eval).expect("No rhs value for '*'"),
+			Some(')') | None => return Some(curr),
 			Some(_) => panic!("Expected an operator!"),
-			None => return Some(curr),
 		}
 	}
 }
@@ -56,7 +55,7 @@ fn eval2<I>(it: &mut I) -> Option<u64>
 		curr = match it.next() {
 			Some('+') => curr + get_val(it, eval2).expect("No rhs value for '+'"),
 			Some('*') => return Some(curr * eval2(it).expect("No rhs value for '*'")),
-			None | Some(')') => return Some(curr),
+			Some(')') | None => return Some(curr),
 			Some(_) => panic!("Expected an operator!"),
 		}
 	}
