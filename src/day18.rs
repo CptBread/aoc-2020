@@ -52,12 +52,11 @@ fn eval2<I>(it: &mut I) -> Option<u64>
 	where I: Iterator<Item = char>
 {
 	let mut curr = get_val(it, eval2)?;
-	let mut mul_stack = Vec::new();
 	loop {
 		curr = match it.next() {
 			Some('+') => curr + get_val(it, eval2).expect("No rhs value for '+'"),
-			Some('*') => { mul_stack.push(curr); get_val(it, eval2).expect("No rhs value for '*'") },
-			None | Some(')') => return Some(mul_stack.into_iter().product::<u64>() * curr),
+			Some('*') => return Some(curr * eval2(it).expect("No rhs value for '*'")),
+			None | Some(')') => return Some(curr),
 			Some(_) => panic!("Expected an operator!"),
 		}
 	}
