@@ -34,7 +34,7 @@ pub fn solve() {
 	}
 	let taken = seats.data.iter().fold(0, |acc, t| acc + (*t == Taken) as usize);
 	println!("{}", taken);
-	// assert_eq!(taken, 2247);
+	assert_eq!(taken, 2247);
 	tick(&mut seats);
 	let mut seats = org;
 	while tick2(&mut seats) != 0 {
@@ -43,7 +43,7 @@ pub fn solve() {
 	}
 	let taken = seats.data.iter().fold(0, |acc, t| acc + (*t == Taken) as usize);
 	println!("{}", taken);
-	// assert_eq!(taken, 2011);
+	assert_eq!(taken, 2011);
 }
 
 type Offset = Vec2<isize>;
