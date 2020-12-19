@@ -36,47 +36,72 @@ pub fn solve() {
 			}
 		}
 	}
+	let mut rules2 = rules.clone();
+	// 8: 42 | 42 8
+	rules2[8] = Rule{
+		matches: vec![Match::Rule(42), Match::Rule(42), Match::Rule(8),],
+		or: Some(1),
+	};
+	// 11: 42 31 | 42 11 31
+	rules2[11] = Rule{
+		matches: vec![Match::Rule(42), Match::Rule(31), Match::Rule(42), Match::Rule(11), Match::Rule(31),],
+		or: Some(2),
+	};
 	// println!("{:?}", rules);
 	let mut res = 0;
+	let mut res2 = 0;
 	for l in lines {
 		// println!("{:?}", check_rule(&l, &rules[0], &rules));
-		if let Some("") = check_rule(&l, &rules[0], &rules) {
+		let v = check_rule(&vec![&l], &rules[0], &rules);
+		if v.iter().any(|s| s.len() == 0) {
+			// println!("{:?}", v);
 			res += 1;
+		}
+		let v = check_rule(&vec![&l], &rules2[0], &rules2);
+		if v.iter().any(|s| s.len() == 0) {
+			// println!("{:?}", v);
+			res2 += 1;
 		}
 	}
 	println!("{}", res);
+	println!("{}", res2);
 }
 
-fn check_rule<'a, 'b>(s: &'a str, rule: &'b Rule, rules: &'b Vec<Rule>) -> Option<&'a str> {
+fn check_rule<'a, 'b>(s: &Vec<&'a str>, rule: &'b Rule, rules: &'b Vec<Rule>) -> Vec<&'a str> {
+	let mut res = Vec::new();
+	let mut start = 0;
 	if let Some(c) = rule.or {
-		for chunk in rule.matches.chunks(c) {
-			let res = chunk.iter().try_fold(s, |s, m| {
-				let res = check_match(s, m, rules);
-				res
-			});
-			if res.is_some() {
-				return res;
-			}
+		if let Some(v) = rule.matches[0..c].iter().try_fold(s.clone(), |s, m| {
+			let res = check_match(&s, m, rules);
+			if res.len() > 0 {
+				Some(res)
+			} else {None}
+		}) {
+			res = v;
 		}
-		None
-	} else 
-	{
-		let res = rule.matches.iter().try_fold(s, |s, m| {
-			let res = check_match(s, m, rules);
-			res
-		});
-		res
+		start = c;
+	} 
+	if let Some(mut r) = rule.matches[start..].iter().try_fold(s.clone(), |s, m| {
+		let res = check_match(&s, m, rules);
+		if res.len() > 0 {
+			Some(res)
+		} else {None}
+	}) {
+		res.append(&mut r);
 	}
+	res
 }
 
-fn check_match<'a, 'b>(s: &'a str, m: &'b Match, rules: &'b Vec<Rule>) -> Option<&'a str> {
+fn check_match<'a, 'b>(s: &Vec<&'a str>, m: &'b Match, rules: &'b Vec<Rule>) -> Vec<&'a str> {
 	match m {
 		Match::Char(c) => {
-			if *c == s.chars().next()? {
-				Some(&s[1..])
-			} else {
-				None
-			}
+			s.iter().filter_map(|s| {
+				if *c == s.chars().next()? {
+					Some(&s[1..])
+				} else {
+					None
+				}
+			}).collect()
 		},
 		Match::Rule(r) => {
 			check_rule(s, &rules[*r], rules)
