@@ -22,7 +22,7 @@ pub fn split_once<'a>(s: &'a str, delim: &str) -> Option<(&'a str, &'a str)> {
 type Pos = Vec2<usize>;
 
 // Maybe remove this struct and just have free loading functions...
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Array2D<T> {
 	pub data: Vec<T>,
 	pub width: usize,
@@ -44,13 +44,15 @@ impl<T> Array2D<T> {
 		Self::load_reader(&mut BufReader::new(&file), f)
 	}
 
-	pub fn load_reader<F>(read: &mut dyn BufRead, mut f: F) -> Self
-		where F: FnMut(char) -> T
+	pub fn load_lines<F, I>(it: &mut I, mut f: F) -> Self
+		where
+			F: FnMut(char) -> T,
+			I: Iterator<Item=String>,
 	{
 		let mut height = 0;
 		let mut width = 0;
 		let mut data = Vec::new();
-		for l in read.lines().map(|l| l.unwrap_or_default()) {
+		while let Some(l) = it.next() {
 			let w = l.len();
 			if width == 0 {
 				width = w;
@@ -66,6 +68,44 @@ impl<T> Array2D<T> {
 			width,
 			height,
 		}
+	}
+
+	// Will consume the first invalid item
+	pub fn load_lines_while<F, F2, I>(it: &mut I, mut f: F, mut check: F2) -> Self
+		where
+			F: FnMut(char) -> T,
+			F2: FnMut(&str) -> bool,
+			I: Iterator<Item=String>,
+	{
+		let mut height = 0;
+		let mut width = 0;
+		let mut data = Vec::new();
+		while let Some(l) = it.next() {
+			if !check(&l) {
+				break;
+			}
+			let w = l.len();
+			if width == 0 {
+				width = w;
+			}
+			else if width != w {
+				panic!("Inconsistent width! Assumed {} got {}", width, w);
+			}
+			height += 1;
+			data.extend(l.chars().map(&mut f));
+		}
+		Array2D{
+			data,
+			width,
+			height,
+		}
+	}
+
+	pub fn load_reader<F>(read: &mut dyn BufRead, f: F) -> Self
+		where F: FnMut(char) -> T
+	{
+		let mut it = read.lines().map(Result::unwrap);
+		Self::load_lines(&mut it, f)
 	}
 
 	pub fn to_tuple(self) -> (usize, usize, Vec<T>) {
