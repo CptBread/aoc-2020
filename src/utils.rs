@@ -70,6 +70,16 @@ impl<T> Array2D<T> {
 		}
 	}
 
+	pub fn from_vec(w: usize, data: Vec<T>) -> Self {
+		let h = data.len() / w;
+		assert_eq!(h * w, data.len());
+		Self{
+			data,
+			width: w,
+			height: h,
+		}
+	}
+
 	// Will consume the first invalid item
 	pub fn load_lines_while<F, F2, I>(it: &mut I, mut f: F, mut check: F2) -> Self
 		where
@@ -116,8 +126,8 @@ impl<T> Array2D<T> {
 		pos.y * self.width + pos.x
 	}
 
-	pub fn pos_to_idx<P: Into<Pos>>(&self, pos: P) -> Option<usize> {
-		let pos: Pos = pos.into();
+	pub fn pos_to_idx<P: TryInto<Pos>>(&self, pos: P) -> Option<usize> {
+		let pos: Pos = pos.try_into().ok()?;
 		if pos.x >= self.width {
 			None
 		} else if pos.y >= self.height {
