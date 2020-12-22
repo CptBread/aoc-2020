@@ -19,6 +19,7 @@ mod day18;
 mod day19;
 mod day20;
 mod day21;
+mod day22;
 mod utils;
 
 use std::env;
@@ -46,6 +47,7 @@ fn main() {
 		day19::solve,
 		day20::solve,
 		day21::solve,
+		day22::solve,
 	];
 	let day = solvers.len();
 	let cmd = env::args().skip(1).next();
