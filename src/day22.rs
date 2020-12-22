@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::{BufReader, prelude::*};
 use std::collections::{VecDeque, HashSet};
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use crate::utils::*;
 
 pub fn solve() {
@@ -51,8 +53,7 @@ fn play(deck0:&mut VecDeque<usize>, deck1:&mut VecDeque<usize>) -> bool {
 		} else if deck1.len() == 0 {
 			return true;
 		}
-		let p = (deck0.clone(), deck1.clone());
-		if !prev_decks.insert(p) {
+		if !prev_decks.insert(hash(deck0, deck1)) {
 			return true;
 		}
 		let c0 = deck0.pop_front().unwrap();
@@ -71,4 +72,11 @@ fn play(deck0:&mut VecDeque<usize>, deck1:&mut VecDeque<usize>) -> bool {
 			deck1.push_back(c0);
 		}
 	}
+}
+
+fn hash(d0: &VecDeque<usize>, d1: &VecDeque<usize>) -> u64 {
+	let mut hasher = DefaultHasher::new();
+	d0.hash(&mut hasher);
+	d1.hash(&mut hasher);
+	hasher.finish()
 }
