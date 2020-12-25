@@ -3,7 +3,6 @@ use std::io::{BufReader, prelude::*};
 use std::collections::{VecDeque, HashSet};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
-use crate::utils::*;
 
 pub fn solve() {
 	let file = File::open("data/day22.txt").unwrap();

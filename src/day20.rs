@@ -7,12 +7,12 @@ use crate::utils::*;
 
 type EdgeLookup = HashMap<String, Vec<(usize, u8, bool)>>;
 type Pos = Vec2<i32>;
-pub const NEIGHBOUR: [Pos; 4] = [
-	Pos::new(-1, 0),
-	Pos::new(0, 1),
-	Pos::new(1, 0),
-	Pos::new(0, -1),
-];
+// pub const NEIGHBOUR: [Pos; 4] = [
+// 	Pos::new(-1, 0),
+// 	Pos::new(0, 1),
+// 	Pos::new(1, 0),
+// 	Pos::new(0, -1),
+// ];
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 struct Rot(u8);
@@ -141,12 +141,12 @@ fn add_edges(lookup: &mut EdgeLookup, edge: &String, id: usize, side: u8) {
 	lookup.entry(edge.chars().rev().collect()).or_default().push((id, side, true));
 }
 
-fn rot_add(rhs: u8, lhs: u8) -> u8 {
-	(rhs + lhs) % 4
-}
+// fn rot_add(rhs: u8, lhs: u8) -> u8 {
+// 	(rhs + lhs) % 4
+// }
 
-// 0-2 1-3 2-0 3-1
+// // 0-2 1-3 2-0 3-1
 
-fn rot_opp(rhs: u8) -> u8 {
-	(rhs + 2) % 4
-}
+// fn rot_opp(rhs: u8) -> u8 {
+// 	(rhs + 2) % 4
+// }
